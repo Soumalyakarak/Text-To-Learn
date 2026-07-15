@@ -28,44 +28,47 @@ export const generateCourse = async (req, res) => {
   if (!topic) return res.status(400).json({ error: "topic is required" });
 
   try {
+    // 1. Generate the outline using Gemini
     const outline = await generateJSON({
       prompt: buildOutlinePrompt(topic),
       temperature: 0.8,
     });
 
-    if (!outline?.title || !Array.isArray(outline?.modules) || outline.modules.length === 0) {
+    if (!outline?.title || !Array.isArray(outline?.modules)) {
       throw new Error("Gemini returned an incomplete course outline.");
     }
 
+    // 2. Prepare the course object
     const courseId = `${slugify(outline.title)}-${nanoid(6)}`;
-    const seenLessonIds = new Set();
-
-    const modules = outline.modules.map((mod) => ({
-      title: mod.title,
-      lessons: (mod.lessons || []).map((lesson) => {
-        let id = slugify(lesson.title);
-        while (!id || seenLessonIds.has(id)) {
-          id = `${id || "lesson"}-${nanoid(4)}`;
-        }
-        seenLessonIds.add(id);
-        return { id, title: lesson.title, done: false };
-      }),
+    
+    // Add unique IDs to every lesson so we can fetch them later
+    const modulesWithIds = outline.modules.map(mod => ({
+      ...mod,
+      lessons: mod.lessons.map(lesson => ({
+        ...lesson,
+        id: nanoid(10) // Vital: each lesson needs a unique ID
+      }))
     }));
 
     const course = {
-      id: courseId,
+      _id: courseId,      // Satisfies standard MongoDB schema practices
+      id: courseId,       // Explicitly mapped to satisfy your insertCourse query mapping!
       title: outline.title,
-      description: outline.description || "",
-      tags: outline.tags?.length ? outline.tags : ["General"],
-      progress: 0,
-      modules,
+      description: outline.description,
+      tags: outline.tags,
+      modules: modulesWithIds,
+      progress: 0
     };
 
+    // 3. Save to database
     await insertCourse(course);
+
+    // 4. Return the new course to the frontend
     res.status(201).json(course);
+
   } catch (err) {
     console.error("Course generation failed:", err);
-    res.status(502).json({ error: err.message || "Course generation failed" });
+    res.status(500).json({ error: err.message || "Failed to generate course" });
   }
 };
 
