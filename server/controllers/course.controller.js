@@ -52,7 +52,7 @@ export const generateCourse = async (req, res) => {
 
     const course = {
       _id: courseId,      // Satisfies standard MongoDB schema practices
-      id: courseId,       // Explicitly mapped to satisfy your insertCourse query mapping!
+      id: courseId,       // Explicitly mapped to satisfy insertCourse query mapping!
       title: outline.title,
       description: outline.description,
       tags: outline.tags,

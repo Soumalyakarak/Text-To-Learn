@@ -5,17 +5,16 @@ import { generateJSON } from "../lib/gemini.js";
 export const getOrGenerateLesson = async (req, res) => {
   const { courseId, moduleIndex, lessonIndex } = req.params;
   
-  // 1. Create a unique ID for this specific position (so DB knows which lesson it is)
+  //Create a unique ID for this specific position (so DB knows which lesson it is)
   const lessonId = `c-${courseId}-m-${moduleIndex}-l-${lessonIndex}`;
 
   try {
     let lessonData = await getLessonContent(lessonId);
     if (lessonData) return res.status(200).json(lessonData);
 
-    // 2. Not in DB? Generate it.
+    //Generate it if not in db
     const course = await getCourseById(courseId);
     
-    // ADD THIS SAFETY CHECK:
     if (!course) {
       return res.status(404).json({ error: "Course not found" });
     }
@@ -39,13 +38,13 @@ export const getOrGenerateLesson = async (req, res) => {
 
     const aiResponse = await generateJSON({ prompt });
 
-    // 3. Save it
+    //Save it
     const newLesson = { lessonId, courseId, title: lessonTitle, ...aiResponse };
     await insertLessonContent(newLesson);
     
     res.status(201).json(newLesson);
   }catch (err) {
-    console.error("DEBUG - Lesson Generation Error:", err); // ADD THIS
-    res.status(500).json({ error: err.message }); // Send the actual error
+    // console.error("DEBUG - Lesson Generation Error:", err);
+    res.status(500).json({ error: err.message }); 
   }
 };

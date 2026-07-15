@@ -3,9 +3,12 @@ import http from "http";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
+console.log("Current Directory:", process.cwd());
+console.log("Is GEMINI_API_KEY defined?", !!process.env.GEMINI_API_KEY);
 
 import { coursesRouter } from "./routes/course.routes.js";
 import { youtubeRouter } from "./routes/youtube.routes.js";
+import { lessonRouter } from "./routes/lesson.routes.js";
 
 
 const app = express();
@@ -25,6 +28,7 @@ app.get("/", (req,res) => {
 })
 app.use("/api/courses", coursesRouter);
 app.use("/api/youtube", youtubeRouter);
+app.use("/api/courses", lessonRouter);
 
 
 /* ---------------- error handler ---------------- */
