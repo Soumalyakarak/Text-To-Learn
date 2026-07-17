@@ -37,6 +37,14 @@ export async function generateJSON({ systemInstruction, prompt, temperature = 0.
     throw new Error("GEMINI_API_KEY is not set.");
   }
 
+  const parseAIResponse = (text) => {
+    const cleaned = text
+      .replace(/```json\s*/g, '') // Remove opening ```json
+      .replace(/```\s*$/g, '')    // Remove closing ```
+      .trim();                   // Remove extra newlines or spaces
+    return JSON.parse(cleaned);
+  };
+
   try {
     // Attempt 1: Try the primary model
     const data = await makeRequest(PRIMARY_MODEL, apiKey, prompt, temperature);
