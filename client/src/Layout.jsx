@@ -1,13 +1,12 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import SidebarNavigation from "./components/SidebarNavigation";
-import { courses } from "./data/mockCourses";
 
 export default function Layout() {
   const location = useLocation();
 
   return (
     <div className="flex h-screen">
-      <SidebarNavigation courses={courses} />
+      <SidebarNavigation/>
       <div className="flex-1 overflow-y-auto">
         <Topbar path={location.pathname} />
         <Outlet />
