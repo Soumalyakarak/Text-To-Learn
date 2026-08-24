@@ -1,9 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/**
- * Adds the `.in` class to an element once it scrolls into view.
- * Usage: const ref = useReveal(); <div ref={ref} className="reveal">...</div>
- */
 export default function useReveal(options = { threshold: 0.15 }) {
   const ref = useRef(null);
 
