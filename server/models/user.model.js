@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema(
           "Password must be at least 8 characters long and include an uppercase letter, a number, and a special character.",
       },
     },
+    completedLessons: {
+      type: [String], //Stores strings like "courseId-modIdx-lesIdx"
+      default: [],
+    },
 
     resetOtp: { type: String },
     resetOtpExpiry: { type: Date },
