@@ -1,21 +1,42 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { memo,useEffect, useState } from "react";
 import { Check } from "lucide-react";
+import { authenticatedFetch } from "../lib/api";
+
+const LessonRow = memo(function LessonRow({ lesson, mi, li, courseId, isCompleted, navigate }) {
+  return (
+    <div
+      onClick={() => navigate(`/course/${courseId}/module/${mi}/lesson/${li}`)}
+      className="flex cursor-pointer items-center gap-3 border-t border-hairline px-4.5 py-3 text-[13.5px] text-text-secondary transition-colors hover:bg-surface-1 hover:text-text-primary"
+    >
+      {/* Indicator Circle */}
+      <div
+        className={`h-4 w-4 flex-shrink-0 rounded-full border-[1.5px] flex items-center justify-center 
+        ${isCompleted ? "bg-green-500 border-green-500" : "border-hairline"}`}
+      >
+        {isCompleted && <Check size={10} className="text-white" />}
+      </div>
+      {lesson.title}
+    </div>
+  );
+});
 
 export default function CourseOverviewPage() {
   const { courseId } = useParams();
+  // console.log("Current courseId:", courseId);
   const navigate = useNavigate();
 
   // State to hold live database records
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [completedLessons, setCompletedLessons] = useState([]);
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
+        const response = await authenticatedFetch(
           `${import.meta.env.VITE_API_URL}/courses/${courseId}`
         );
         if (!response.ok) throw new Error("Course not found in database.");
@@ -30,6 +51,19 @@ export default function CourseOverviewPage() {
     };
 
     if (courseId) fetchCourse();
+  }, [courseId]);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const res = await authenticatedFetch(
+        `${import.meta.env.VITE_API_URL}/progress/${courseId}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setCompletedLessons(data.completedLessons); // Expecting array: ["c1-m0-l0", ...]
+      }
+    };
+    if (courseId) fetchProgress();
   }, [courseId]);
 
   if (loading) {
@@ -76,30 +110,22 @@ export default function CourseOverviewPage() {
             </span>
           </div>
           {mod.lessons?.map((lesson, li) => {
-            // Retrieve completed lessons from local storage
-            const completedLessons = JSON.parse(
-              localStorage.getItem("completedLessons") || "{}"
-            );
-            const isCompleted = completedLessons[`${courseId}-${mi}-${li}`];
+            // Safe calculation of completion status
+            const isCompleted =
+              Array.isArray(completedLessons) &&
+              completedLessons.includes(`${courseId}-${mi}-${li}`);
 
-            return (
-              <div
-                key={lesson.id}
-                onClick={() =>
-                  navigate(`/course/${courseId}/module/${mi}/lesson/${li}`)
-                }
-                className="flex cursor-pointer items-center gap-3 border-t border-hairline px-4.5 py-3 text-[13.5px] text-text-secondary transition-colors hover:bg-surface-1 hover:text-text-primary"
-              >
-                {/* Indicator Circle */}
-                <div
-                  className={`h-4 w-4 flex-shrink-0 rounded-full border-[1.5px] flex items-center justify-center 
-        ${isCompleted ? "bg-green-500 border-green-500" : "border-hairline"}`}
-                >
-                  {isCompleted && <Check size={10} className="text-white" />}
-                </div>
-                {lesson.title}
-              </div>
-            );
+              return (
+                <LessonRow
+                  key={lesson.id || `${mi}-${li}`}
+                  lesson={lesson}
+                  mi={mi}
+                  li={li}
+                  courseId={courseId}
+                  isCompleted={isCompleted}
+                  navigate={navigate}
+                />
+              );
           })}
         </div>
       ))}
