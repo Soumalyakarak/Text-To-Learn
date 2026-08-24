@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 const LessonContentSchema = new mongoose.Schema({
   _id: { type: String, required: true }, // lesson id, matches Course.modules[].lessons[].id
   courseId: { type: String, required: true, index: true },
+  user: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
   title: { type: String, required: true },
   objectives: { type: [String], default: [] },
   content: { type: [mongoose.Schema.Types.Mixed], default: [] },
