@@ -6,6 +6,7 @@ import { YoutubeCache } from "../models/youtubecache.model.js";
 export async function insertCourse(course){
   await Course.create({
     _id: course.id,
+    user: course.user,
     title: course.title,
     description: course.description,
     tags: course.tags ?? [],
@@ -14,13 +15,13 @@ export async function insertCourse(course){
   });
 }
 
-export async function getAllCourses() {
-  const docs = await Course.find().sort({ createdAt: -1 }).lean();
+export async function getAllCourses(userId) {
+  const docs = await Course.find({ user: userId }).sort({ createdAt: -1 }).lean();
   return docs.map(docToCourse);
 }
 
-export async function getCourseById(id) {
-  const doc = await Course.findById(id).lean();
+export async function getCourseById(id,userId) {
+  const doc = await Course.findOne({ _id: id, user: userId }).lean();
   return doc ? docToCourse(doc) : null;
 }
 
@@ -28,8 +29,8 @@ export async function updateCourseModules(id, modules) {
   await Course.updateOne({ _id: id }, { $set: { modules } });
 }
 
-export async function setLessonDone(courseId, moduleIndex, lessonIndex, done) {
-  const course = await getCourseById(courseId);
+export async function setLessonDone(courseId, moduleIndex, lessonIndex, done, userId) {
+  const course = await getCourseById(courseId,userId);
   if (!course) return null;
 
   const modules = course.modules;
@@ -42,8 +43,8 @@ export async function setLessonDone(courseId, moduleIndex, lessonIndex, done) {
   const completed = modules.reduce((n, m) => n + m.lessons.filter((l) => l.done).length, 0);
   const progress = total ? Math.round((completed / total) * 100) : 0;
 
-  await Course.updateOne({ _id: courseId }, { $set: { modules, progress } });
-  return getCourseById(courseId);
+  await Course.updateOne({ _id: courseId , user: userId}, { $set: { modules, progress } });
+  return getCourseById(courseId,userId);
 }
 
 function docToCourse(doc) {
