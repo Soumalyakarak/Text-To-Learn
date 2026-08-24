@@ -25,6 +25,12 @@ const CourseSchema = new mongoose.Schema({
   progress: { type: Number, default: 0 },
   modules: { type: [ModuleSchema], default: [] },
   createdAt: { type: Date, default: Date.now },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    index: true, //Speeds up queries when finding courses by user
+  },
 });
 
 export const Course = mongoose.model("Course", CourseSchema);
