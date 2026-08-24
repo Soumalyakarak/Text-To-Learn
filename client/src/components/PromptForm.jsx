@@ -1,3 +1,4 @@
+import { Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
 
 export default function PromptForm({ onSubmit, loading }) {
@@ -26,7 +27,15 @@ export default function PromptForm({ onSubmit, loading }) {
         disabled={loading}
         className="rounded-[5px] border border-hairline-strong bg-surface-3 px-2.5 py-1.5 font-mono text-[11px] font-medium text-text-secondary disabled:cursor-default"
       >
-        {loading ? "Generating…" : "⏎ Generate"}
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="animate-spin h-4 w-4" /> Generating…
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            Generate <Sparkles className="h-4 w-4" />
+          </span>
+        )}
       </button>
     </form>
   );
