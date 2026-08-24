@@ -17,7 +17,7 @@ const ROWS = [
   //   { label: "F12" },
   // ],
   [
-    { label: "§" },
+    { label: "~" },
     { label: "1" },
     { label: "2" },
     { label: "3" },
@@ -75,7 +75,7 @@ const ROWS = [
     { label: "," },
     { label: "." },
     { label: "/" },
-    { label: "shift", wide: 2.4 },
+    { label: "shift", wide: 2.6 },
   ],
   [
     { label: "fn", wide: 1.1 },
@@ -84,7 +84,7 @@ const ROWS = [
     { label: "command", wide: 1.9, active: true },
     { label: "", wide: 6.1, active: true },
     { label: "command", wide: 1.9 },
-    { label: "option", wide: 1.45 },
+    { label: "option", wide: 1.3 },
   ],
 ];
 
@@ -96,7 +96,8 @@ export default function KeyboardCTA({ onStart }) {
           Take the short way.
         </h2>
         <p className="mx-auto mt-4 max-w-[420px] text-[15px] leading-relaxed text-text-secondary">
-          Type one topic and get a structured course you can start learning from immediately.
+          Type one topic and get a structured course you can start learning from
+          immediately.
         </p>
         {/* <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <button
@@ -121,23 +122,29 @@ export default function KeyboardCTA({ onStart }) {
   );
 }
 
-const KEY_H = 55;
-const GAP = 6;
-const UNIT = 46;
+const KEY_H = 60;
+const GAP = 4;
+const UNIT = 60;
 
 function layoutRows(rows) {
+  //Add a slight offset so the top-left key's border doesn't get clipped by the SVG bounds
+  const OFFSET = 3;
+
   const laid = rows.map((row, ri) => {
-    let x = 0;
+    let x = OFFSET;
     const keys = row.map((k) => {
       const w = (k.wide || 1) * UNIT;
-      const key = { ...k, x, y: ri * (KEY_H + GAP), w, h: KEY_H };
+      const key = { ...k, x, y: OFFSET + ri * (KEY_H + GAP), w, h: KEY_H };
       x += w + GAP;
       return key;
     });
-    return { keys, width: x - GAP };
+    return { keys, width: x - GAP + OFFSET };
   });
+
   const width = Math.max(...laid.map((r) => r.width));
-  const height = rows.length * KEY_H + (rows.length - 1) * GAP;
+  const height =
+    OFFSET + rows.length * KEY_H + (rows.length - 1) * GAP + OFFSET;
+
   return { laid, width, height };
 }
 
@@ -145,7 +152,10 @@ function KeyboardSVG() {
   const { laid, width, height } = useMemo(() => layoutRows(ROWS), []);
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="block h-auto w-full overflow-visible">
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="block h-auto w-full overflow-visible"
+    >
       <defs>
         <linearGradient id="kbKey" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="rgba(20,21,22,0.92)" />
@@ -174,7 +184,9 @@ function KeyboardSVG() {
               height={k.h}
               rx="9"
               fill={k.active ? "url(#kbKeyActive)" : "url(#kbKey)"}
-              stroke={k.active ? "rgba(255,99,99,0.5)" : "rgba(255,255,255,0.06)"}
+              stroke={
+                k.active ? "rgba(255,99,99,0.5)" : "rgba(255,255,255,0.06)"
+              }
               strokeWidth="1"
             />
             {k.label && (
@@ -183,7 +195,9 @@ function KeyboardSVG() {
                 y={k.y + k.h / 2 + 1}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill={k.active ? "rgba(255,214,222,0.75)" : "rgba(255,255,255,0.3)"}
+                fill={
+                  k.active ? "rgba(255,214,222,0.75)" : "rgba(255,255,255,0.3)"
+                }
                 fontSize={k.label.length > 1 ? 13 : 18}
                 fontWeight="600"
                 fontFamily="Inter, system-ui, sans-serif"
