@@ -9,8 +9,22 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // Your httpOnly logic
-    navigate("/courses");
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", 
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if (response.ok) {
+        navigate("/");
+      } else {
+        alert("Login failed");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+    }
   };
 
   return (
