@@ -10,17 +10,39 @@ export default function RegisterPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    // Your registration logic
-    navigate("/courses");
-  };
 
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ name, email, password }),
+        }
+      );
+
+      if (response.ok) {
+        // Registration successful, proceed to the dashboard
+        navigate("/login");
+      } else {
+        // Handle server-side validation errors
+        const errorData = await response.json();
+        alert(errorData.message || "Registration failed. Please try again.");
+      }
+    } catch (err) {
+      // Handle network errors
+      console.error("Registration error:", err);
+      alert("Connection error. Please check your internet and try again.");
+    }
+  };
+  
   return (
-    <AuthLayout 
-      title="Create an account" 
+    <AuthLayout
+      title="Create an account"
       subtitle="Start generating full courses in seconds."
     >
       <form onSubmit={handleRegister} className="flex flex-col gap-4">
-        
         {/* Full Name Input */}
         <div>
           <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-text-muted">
@@ -77,7 +99,10 @@ export default function RegisterPage() {
 
       <p className="mt-8 text-center text-[13px] text-text-secondary">
         Already have an account?{" "}
-        <Link to="/login" className="font-semibold text-white hover:text-accent">
+        <Link
+          to="/login"
+          className="font-semibold text-white hover:text-accent"
+        >
           Sign in
         </Link>
       </p>
