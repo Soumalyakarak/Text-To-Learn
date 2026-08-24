@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import FloatingNav from "../components/FloatingNav";
 import StripeHero from "../components/StripeHero";
 import KeyboardHero from "../components/KeyboardHero";
@@ -6,15 +6,16 @@ import KeyboardCTA from "../components/KeyboardCTA";
 import ShowcaseCarousel from "../components/ShowcaseCarousel";
 import BlueprintFeatures from "../components/BlueprintFeatures";
 import PromptForm from "../components/PromptForm";
-import { courses } from "../data/mockCourses";
+import { mockCourses, lessonContent } from "../data/mockCourses.js";
 import useReveal from "../hooks/useReveal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IconPrompt,
   IconLayers,
   IconDownload,
   IconGlobe,
 } from "../components/icons";
+import { authenticatedFetch } from "../lib/api";
 
 const BADGES = [
   {
@@ -102,11 +103,37 @@ export default function HomePage() {
   const communityRef = useReveal();
   const footerRef = useReveal();
   const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchUserCourses = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/courses`, {
+          credentials: "include",
+        });
+
+        if (res.status === 401) {
+          setCourses(mockCourses);
+          return;
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          setCourses(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch courses:", err);
+        setCourses(mockCourses); // Fallback to mock courses on network error
+      }
+    };
+
+    fetchUserCourses();
+  }, []);
 
   const handleGenerate = async (topic) => {
     setLoading(true);
     try {
-      const response = await fetch(
+      const response = await authenticatedFetch(
         `${import.meta.env.VITE_API_URL}/courses/generate`,
         {
           method: "POST",
@@ -115,12 +142,16 @@ export default function HomePage() {
         }
       );
 
-      if (!response.ok) throw new Error("Generation failed");
+      if (!response.ok) {
+        if (response.status !== 401) throw new Error("Generation failed");
+        return;
+      }
 
       const data = await response.json();
       navigate(`/course/${data.id}`);
     } catch (error) {
       console.error("Error generating course:", error);
+      alert("Please sign in to generate courses.");
     } finally {
       setLoading(false);
     }
@@ -133,14 +164,14 @@ export default function HomePage() {
       <StripeHero>
         <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-[rgba(255,99,99,0.35)]  bg-cta-bg px-3 py-1.5 font-mono text-[11px] font-medium tracking-wide text-accent [text-shadow:0_2px_20px_rgba(0,0,0,0.6)]">
           <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-accent" />{" "}
-          AI-generated, in seconds
+          generated, in seconds
         </div>
-        <h1 className="mb-[22px] text-[clamp(38px,6vw,68px)] leading-[1.04] font-bold tracking-[-1.1px] [text-shadow:0_4px_40px_rgba(0,0,0,0.5)]">
+        <h1 className="mb-5.5 text-[clamp(38px,6vw,68px)] leading-[1.04] font-bold tracking-[-1.1px] [text-shadow:0_4px_40px_rgba(0,0,0,0.5)]">
           Type a topic.
           <br />
           Get a full course.
         </h1>
-        <p className="mx-auto mb-9 max-w-[540px] text-[15.5px] leading-relaxed text-[#e8e8e8] [text-shadow:0_2px_20px_rgba(0,0,0,0.6)]">
+        <p className="mx-auto mb-9 max-w-135 text-[15.5px] leading-relaxed text-[#e8e8e8] [text-shadow:0_2px_20px_rgba(0,0,0,0.6)]">
           Modules, lessons, video, quizzes — structured and ready to learn from,
           instantly. No searching, no setup.
         </p>
@@ -163,7 +194,10 @@ export default function HomePage() {
         </div>
       </StripeHero>
 
-      <div className="mx-auto max-w-[1120px] px-12 pb-[120px]">
+      <div
+        id="prompt-form-section"
+        className="mx-auto max-w-[1120px] px-12 pb-30"
+      >
         <div className="-mt-5">
           <PromptForm onSubmit={handleGenerate} loading={loading} />
           <div className="mt-4 flex flex-wrap justify-center gap-2">
@@ -183,11 +217,11 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="mt-11 mb-3.5 text-xs tracking-wide text-text-muted uppercase">
+        <div id="course-section" className="mt-11 mb-3.5 text-xs tracking-wide text-text-muted uppercase">
           Continue learning
         </div>
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-          {courses.map((c) => (
+          {courses.slice(0, 2).map((c) => (
             <div
               key={c.id}
               onClick={() => navigate(`/course/${c.id}`)}
@@ -284,7 +318,7 @@ export default function HomePage() {
       >
         <div className="absolute left-1/2 top-[240px] z-0 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,99,99,0.18),transparent_55%)] pointer-events-none" />
         <div className="absolute left-1/2 top-[100px] z-0 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_top,rgba(255,99,99,0.12),transparent_45%)] pointer-events-none" />
-        
+
         <img
           src="/isolatedCube.webp"
           alt=""
@@ -393,7 +427,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1536px] px-6 pb-[120px]">
+      <div className="mx-auto max-w-384 px-6 pb-30">
         <KeyboardCTA
           onStart={() => document.getElementById("prompt-input")?.focus()}
         />
@@ -418,20 +452,20 @@ export default function HomePage() {
                 Product
               </h5>
               <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+                href="#prompt-form-section"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 Prompt to Course
               </a>
               <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+                href="#course-section"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 Rich Lessons
               </a>
               <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+                href="#course-section"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 PDF Export
               </a>
@@ -441,43 +475,37 @@ export default function HomePage() {
                 Learn
               </h5>
               <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+                href="#prompt-form-section"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 Browse Courses
               </a>
-              <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
-              >
-                Saved
-              </a>
-              <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+              <Link
+                to="/courses"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 History
-              </a>
+              </Link>
             </div>
             <div>
               <h5 className="mb-3 text-[11px] tracking-wide text-text-muted uppercase">
                 Account
               </h5>
-              <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+              <Link
+                to="/login"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 Sign in
-              </a>
-              <a
-                href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+              </Link>
+              <Link
+                to="/signup"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 Sign up
-              </a>
+              </Link>
               <a
                 href="#"
-                className="mb-2.5 block text-[13px] text-text-secondary hover:text-text-primary"
+                className="mb-2.5 block text-[13px] text-text-secondary transition-colors hover:text-text-primary"
               >
                 Settings
               </a>
