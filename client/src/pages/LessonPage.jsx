@@ -3,12 +3,9 @@ import { useEffect, useState } from "react";
 import LessonRenderer from "../components/LessonRenderer";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { LessonPDF } from "../components/LessonPDF";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Download,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Download } from "lucide-react";
+import { authenticatedFetch } from "../lib/api";
+import LessonAudioPlayer from "../components/LessonAudioPlayer";
 
 export default function LessonPage() {
   const { courseId, moduleIndex, lessonIndex } = useParams();
@@ -18,23 +15,45 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lesson, setLesson] = useState(null);
+  const [isCompleted, setIsCompleted] = useState(false);
 
-  const [completedLessons, setCompletedLessons] = useState(() => {
-    // Load from localStorage so it persists on refresh
-    return JSON.parse(localStorage.getItem("completedLessons") || "{}");
-  });
-
-  const isCurrentLessonCompleted =
-    !!completedLessons[`${courseId}-${moduleIndex}-${lessonIndex}`];
-
-  const toggleMarkAsRead = () => {
-    const key = `${courseId}-${moduleIndex}-${lessonIndex}`;
-    const newCompleted = {
-      ...completedLessons,
-      [key]: !completedLessons[key], // Toggles between true and false
+  //Fetch completion status when page loads
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const res = await authenticatedFetch(
+        `${import.meta.env.VITE_API_URL}/progress/${courseId}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        // Assume data returns an array of completed lesson keys
+        setIsCompleted(
+          data.completedLessons.includes(
+            `${courseId}-${moduleIndex}-${lessonIndex}`
+          )
+        );
+      }
     };
-    setCompletedLessons(newCompleted);
-    localStorage.setItem("completedLessons", JSON.stringify(newCompleted));
+    if (courseId) fetchProgress();
+  }, [courseId, moduleIndex, lessonIndex]);
+
+  //Update toggle function
+  const toggleMarkAsRead = async () => {
+    const res = await authenticatedFetch(
+      `${import.meta.env.VITE_API_URL}/progress/toggle`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          courseId,
+          moduleIndex,
+          lessonIndex,
+          status: !isCompleted,
+        }),
+      }
+    );
+
+    if (res.ok) {
+      setIsCompleted(!isCompleted);
+    }
   };
 
   const goToNext = () => {
@@ -59,14 +78,14 @@ export default function LessonPage() {
     const fetchAll = async () => {
       setLoading(true);
       //Fetch course outline
-      const cRes = await fetch(
+      const cRes = await authenticatedFetch(
         `${import.meta.env.VITE_API_URL}/courses/${courseId}`
       );
       const courseData = await cRes.json();
       setCourse(courseData);
 
       //Fetch specific lesson content using the indices you already use
-      const lRes = await fetch(
+      const lRes = await authenticatedFetch(
         `${
           import.meta.env.VITE_API_URL
         }/courses/${courseId}/module/${moduleIndex}/lesson/${lessonIndex}`
@@ -138,6 +157,12 @@ export default function LessonPage() {
           </ul>
         </div>
       )}
+      {lesson?.content && (
+        <div className="mb-7">
+          <LessonAudioPlayer lessonText={lesson.content} />
+        </div>
+      )}
+
       {/* Passes content right down to your custom rendering components */}
       <div id="lesson-content">
         <LessonRenderer
@@ -148,7 +173,7 @@ export default function LessonPage() {
         />
       </div>
       {/* Updated Responsive Footer */}
-      <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-6">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full justify-center sm:w-auto sm:justify-end">
         {/* Left Action: Back */}
         <button
           onClick={() => navigate(`/course/${courseId}`)}
@@ -164,13 +189,13 @@ export default function LessonPage() {
           <button
             onClick={toggleMarkAsRead}
             className={`flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-all w-full justify-center sm:w-auto ${
-              isCurrentLessonCompleted
+              isCompleted
                 ? "bg-green-500 text-white border border-green-500 hover:bg-green-600"
                 : "border border-hairline text-text-secondary hover:text-accent hover:border-accent"
             }`}
           >
             <Check size={16} />
-            {isCurrentLessonCompleted ? "Completed" : "Mark as Read"}
+            {isCompleted ? "Completed" : "Mark as Read"}
           </button>
 
           {/* Next Lesson Button */}
