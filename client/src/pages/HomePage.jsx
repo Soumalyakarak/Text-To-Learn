@@ -28,8 +28,8 @@ const BADGES = [
   {
     Icon: IconLayers,
     title: "Structured.",
-    sub: "3–6 modules, always.",
-    pos: "top-10 right-[-24px]",
+    sub: "3–6 modules",
+    pos: "top-2 right-[-5px]",
     delay: "0.3s",
   },
   {
@@ -43,7 +43,7 @@ const BADGES = [
     Icon: IconDownload,
     title: "Portable.",
     sub: "Export any lesson to PDF.",
-    pos: "bottom-[-16px] right-0",
+    pos: "bottom-[-1px] right-0",
     delay: "0.7s",
   },
 ];
@@ -272,9 +272,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="showcase-neon-frame relative z-[2] mx-auto min-h-[530px] max-w-[880px] overflow-visible rounded-[30px]">
+        {/* <div className="showcase-neon-frame relative z-[2] mx-auto min-h-[530px] max-w-[880px] overflow-visible rounded-[30px]"> */}
           <ShowcaseCarousel />
-        </div>
+        {/* </div> */}
       </div>
 
       <div className="mx-auto grid max-w-[1120px] grid-cols-1 items-center gap-10 px-6 py-[160px] text-center md:grid-cols-2 md:text-left">
@@ -289,7 +289,7 @@ export default function HomePage() {
             you a complete, structured path — built for how you actually learn.
           </p>
         </div>
-        <div className="relative flex min-h-[340px] items-center justify-center md:justify-start">
+        <div className="relative flex min-h-85 items-center justify-center md:justify-start">
           <KeyboardHero />
           {BADGES.map(({ Icon, title, sub, pos, delay }) => (
             <div

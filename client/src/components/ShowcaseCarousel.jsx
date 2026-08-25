@@ -63,7 +63,7 @@ export default function ShowcaseCarousel() {
     <div className="relative mx-auto w-full overflow-visible px-0 py-13">
       <div className="showcase-glow-backdrop pointer-events-none absolute inset-x-0 -top-[10%] bottom-[10%] z-0" />
 
-      <div key={active} className="demo-glass-card relative z-[5] mx-auto w-full max-w-[650px] overflow-hidden rounded-[20px]">
+      <div key={active} className="demo-glass-card relative z-[5] mx-auto w-full max-w-[750px] overflow-hidden rounded-[20px]">
         <div className="demo-glass-titlebar flex items-center gap-1.5 border-b border-white/5 px-[18px] py-3.5">
           <span className="h-2.25 w-2.25 rounded-full bg-[#ff5f57]" />
           <span className="h-2.25 w-2.25 rounded-full bg-[#febc2e]" />

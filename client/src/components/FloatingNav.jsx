@@ -38,6 +38,7 @@ export default function FloatingNav() {
           setUser(null); // Keep as null if not logged in
         }
       } catch (err) {
+        console.log(err);
         setUser(null);
       }
     };
@@ -62,10 +63,10 @@ export default function FloatingNav() {
   };
 
   return (
-    <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-5 pt-4">
-      <nav className="flex w-full max-w-[960px] items-center justify-between gap-4 rounded-full border border-hairline-strong bg-[rgba(16,17,17,0.72)] py-2 pr-2 pl-5 backdrop-blur-2xl">
+    <div className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-5 sm:pt-4">
+      <nav className="flex w-full max-w-275 items-center justify-between gap-2 rounded-full border border-hairline-strong bg-[rgba(16,17,17,0.72)] py-2 pr-2 pl-4 backdrop-blur-2xl sm:gap-4 sm:pl-5">
         <div className="flex items-center gap-2 text-[13.5px] font-semibold whitespace-nowrap">
-          <span className="h-[7px] w-[7px] rounded-full bg-accent" />
+          <span className="h-1.75 w-1.75 rounded-full bg-accent" />
           Text-to-Learn
         </div>
 
@@ -95,21 +96,21 @@ export default function FloatingNav() {
           {user ? (
             <button
               onClick={handleLogout}
-              className="text-[12.5px] text-text-secondary transition-colors hover:text-text-primary"
+              className="text-[12.5px] cursor-pointer text-text-secondary transition-colors hover:text-text-primary"
             >
               Logout
             </button>
           ) : (
             <Link
               to="/login"
-              className="text-[12.5px] text-text-secondary transition-colors hover:text-text-primary"
+              className="text-[12.5px] cursor-pointer text-text-secondary transition-colors hover:text-text-primary"
             >
               Login
             </Link>
           )}
           <button
             onClick={handleGetStarted}
-            className="inline-flex items-center gap-1.5 rounded-full bg-cta-bg px-4 py-2 text-[12.5px] font-bold text-cta-text transition-transform hover:scale-105"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-cta-bg px-4 py-2 text-[12.5px] font-bold text-cta-text transition-transform hover:scale-105"
           >
             Get Started
           </button>

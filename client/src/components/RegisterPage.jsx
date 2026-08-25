@@ -22,13 +22,14 @@ export default function RegisterPage() {
         }
       );
 
+      const data = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        // Registration successful, proceed to the dashboard
         navigate("/login");
       } else {
-        // Handle server-side validation errors
-        const errorData = await response.json();
-        alert(errorData.message || "Registration failed. Please try again.");
+        // Handles both custom ApiError structures
+        const errorMessage = data.message || data.error || "Registration failed. Please try again.";
+        alert(errorMessage);
       }
     } catch (err) {
       // Handle network errors
