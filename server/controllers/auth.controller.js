@@ -1,36 +1,50 @@
-import User from '../models/user.model.js'
-import { ApiError } from '../utils/ApiError.js'
+import User from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { otpEmailTemplate } from "../utils/emailTemplate.js";
-import { sendEmail } from '../utils/sendEmail.js';
+import { sendEmail } from "../utils/sendEmail.js";
 
-export const register = async(req,res,next) => {
-    try {
-        const {name,email,password} = req.body;   
-        if(!name || !email || !password){
-            throw new ApiError(400,"All fields are required");
-        }
-
-        const existingUser = await User.findOne({email});
-        if(existingUser){
-            throw new ApiError(409,"User already exist");
-        }
-
-        const user = await User.create({name,email,password});
-        res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            user: {
-              id: user._id,
-              name: user.name,
-              email: user.email
-            }
-        });
-    }catch(error){
-        next(error);
+export const register = async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      throw new ApiError(400, "All fields are required");
     }
-}
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new ApiError(409, "User already exist");
+    }
+
+    const user = await User.create({ name, email, password });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
+    );
+
+    res
+      .status(201)
+      .cookie("accessToken", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .json({
+        success: true,
+        message: "User registered successfully",
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const login = async (req, res, next) => {
   try {
@@ -77,13 +91,12 @@ export const login = async (req, res, next) => {
   }
 };
 
-
 export const logout = (req, res) => {
   res
     .clearCookie("accessToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       path: "/",
     })
     .status(200)
@@ -135,7 +148,7 @@ export const forgotPassword = async (req, res) => {
     return res.status(200).json({
       message: "If this email exists, an OTP has been sent.",
     });
-  }catch (err){
+  } catch (err) {
     console.error("Forgot password error:", err);
 
     return res.status(500).json({
@@ -151,14 +164,15 @@ export const resetPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
-    if (!user)
-      return res.status(400).json({ message: "Invalid request." });
+    if (!user) return res.status(400).json({ message: "Invalid request." });
 
     if (user.resetOtp !== otp)
       return res.status(400).json({ message: "Invalid OTP." });
 
     if (Date.now() > user.resetOtpExpiry)
-      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+      return res
+        .status(400)
+        .json({ message: "OTP has expired. Please request a new one." });
 
     user.password = newPassword;
     user.resetOtp = undefined;
@@ -167,7 +181,6 @@ export const resetPassword = async (req, res) => {
     await user.save({ validateBeforeSave: false }); //skips validator,hook still hashes
 
     res.status(200).json({ message: "Password reset successful." });
-
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
@@ -182,9 +195,9 @@ export const googleCallback = (req, res) => {
     );
 
     res.cookie("accessToken", token, {
-      httpOnly: true, 
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -192,6 +205,10 @@ export const googleCallback = (req, res) => {
     return res.redirect(`${clientUrl}/`);
   } catch (error) {
     console.error("Google Auth Error:", error);
-    return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=oauth_failed`);
+    return res.redirect(
+      `${
+        process.env.CLIENT_URL || "http://localhost:5173"
+      }/login?error=oauth_failed`
+    );
   }
 };

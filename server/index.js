@@ -15,6 +15,7 @@ import passport from "passport";
 
 
 const app = express();
+app.set("trust proxy", 1);
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 /* ---------------- middleware ---------------- */
 app.use(cookieParser());
