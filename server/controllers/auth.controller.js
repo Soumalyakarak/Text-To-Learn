@@ -2,8 +2,8 @@ import User from '../models/user.model.js'
 import { ApiError } from '../utils/ApiError.js'
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
 import { otpEmailTemplate } from "../utils/emailTemplate.js";
+import { sendEmail } from '../utils/sendEmail.js';
 
 export const register = async(req,res,next) => {
     try {
@@ -110,39 +110,38 @@ export const forgotPassword = async (req, res) => {
   try {
     const user = await User.findOne({ email });
 
-    // Don't reveal if email exists or not (security best practice)
     if (!user) {
-      return res.status(200).json({ message: "If this email exists, an OTP has been sent." });
+      return res.status(200).json({
+        message: "If this email exists, an OTP has been sent.",
+      });
     }
 
-    // Generate 6-digit OTP
     const otp = crypto.randomInt(100000, 999999).toString();
 
-    // Save OTP + expiry (10 mins) to user document
-    user.resetOtp = otp;
-    user.resetOtpExpiry = Date.now() + 10 * 60 * 1000; //10 minutes
-    
-    await user.save({ validateBeforeSave: false }); // skips validator,hook still hashes
-
-    // Send OTP via email
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, 
-      },
-    });
-
-    await transporter.sendMail({
-      from: `"Thinkboard" <${process.env.EMAIL_USER}>`,
+    await sendEmail({
       to: email,
       subject: "Your Thinkboard Password Reset OTP",
-      html: otpEmailTemplate(otp), 
+      html: otpEmailTemplate(otp),
     });
-    res.status(200).json({ message: "If this email exists, an OTP has been sent." });
 
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
+    console.log("OTP Email sent successfully via Brevo");
+
+    //Save OTP only after email is successfully sent
+    user.resetOtp = otp;
+    user.resetOtpExpiry = Date.now() + 10 * 60 * 1000;
+
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json({
+      message: "If this email exists, an OTP has been sent.",
+    });
+  }catch (err){
+    console.error("Forgot password error:", err);
+
+    return res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
@@ -171,5 +170,28 @@ export const resetPassword = async (req, res) => {
 
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+export const googleCallback = (req, res) => {
+  try {
+    const token = jwt.sign(
+      { id: req.user._id, email: req.user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("accessToken", token, {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    return res.redirect(`${clientUrl}/`);
+  } catch (error) {
+    console.error("Google Auth Error:", error);
+    return res.redirect(`${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=oauth_failed`);
   }
 };

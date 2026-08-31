@@ -20,19 +20,25 @@ const userSchema = new mongoose.Schema(
         message: "Invalid email format",
       },
     },
+    googleId: { type: String, unique: true, sparse: true },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId; // Required ONLY if it's not a Google OAuth user
+      },
       select: false,
       validate: {
-        validator: (value) =>
-          validator.isStrongPassword(value, {
+        validator: function (value) {
+          // Skip validation for OAuth users who don't have a password
+          if (this.googleId && !value) return true;
+          return validator.isStrongPassword(value, {
             minLength: 8,
             minLowercase: 1,
             minUppercase: 1,
             minNumbers: 1,
             minSymbols: 1,
-          }),
+          });
+        },
         message:
           "Password must be at least 8 characters long and include an uppercase letter, a number, and a special character.",
       },

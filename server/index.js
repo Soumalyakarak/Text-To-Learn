@@ -11,6 +11,7 @@ import { coursesRouter } from "./routes/course.routes.js";
 import { youtubeRouter } from "./routes/youtube.routes.js";
 import { progressRouter } from "./routes/progress.routes.js";
 import { lessonRouter } from "./routes/lesson.routes.js";
+import passport from "passport";
 
 
 const app = express();
@@ -23,7 +24,8 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());    
+app.use(express.json()); 
+app.use(passport.initialize());   
 /* ---------------- routes ---------------- */
 // app.use((req, res, next) => {
 //   console.log(`🔍 Incoming Request: ${req.method} ${req.url}`);
