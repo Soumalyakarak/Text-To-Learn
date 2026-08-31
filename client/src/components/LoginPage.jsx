@@ -60,9 +60,9 @@ export default function LoginPage() {
           <label className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[14px] text-text-subtle transition-all peer-focus:-top-2 peer-focus:left-3 peer-focus:scale-75 peer-focus:bg-[#0A0A0A] peer-focus:px-1 peer-focus:text-accent peer-focus:opacity-100 peer-valid:-top-2 peer-valid:left-3 peer-valid:scale-75 peer-valid:bg-[#0A0A0A] peer-valid:px-1 peer-valid:opacity-100">
             Password
           </label>
-          <a href="#" className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-text-muted hover:text-white">
+          <Link to="/forgot-password" className="absolute right-4 top-1/2 -translate-y-1/2 text-[12px] text-text-muted hover:text-white">
             Forgot?
-          </a>
+          </Link>
         </div>
 
         <button

@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useAuth } from "../store/auth-context";
 
 export default function FloatingNav() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const {user,setUser}  = useAuth();
 
   const handleGetStarted = () => {
     if (user) {
@@ -19,32 +19,6 @@ export default function FloatingNav() {
       navigate("/signup");
     }
   };
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          method: "GET",
-          headers: {
-            "Cache-Control": "no-cache", // Forces the browser to check the server
-            Pragma: "no-cache",
-          },
-          credentials: "include",
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data.user); // Set the user object from your backend response
-        } else {
-          setUser(null); // Keep as null if not logged in
-        }
-      } catch (err) {
-        console.log(err);
-        setUser(null);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   const handleLogout = async () => {
     try {
