@@ -30,8 +30,6 @@ passport.use(
               name: profile.displayName,
               email: profile.emails[0].value,
               googleId: profile.id,
-              // Random password placeholder for OAuth users
-              password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8),
             });
           }
         }
