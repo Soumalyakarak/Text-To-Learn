@@ -1,0 +1,43 @@
+name: Client CI/CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+
+jobs:
+  check-client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
+
+      - name: Install Client Dependencies
+        run: npm ci
+
+      - name: Build Client Verification
+        run: npm run build
+
+  deploy-client:
+    needs: check-client
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Frontend Deployment
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
