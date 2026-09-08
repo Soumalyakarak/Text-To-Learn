@@ -25,11 +25,11 @@ export const getCourse = async (req, res, next) => {
     const userId = req.user.id || req.user._id;
     console.log("🔍 Searching for ID:", req.params.id, "for User:", userId);
     
-    // Test the query directly
+    //Test the query directly
     const course = await Course.findOne({ _id: req.params.id, user: userId }).lean();
     
     if (!course) {
-        // Find out if the course exists at all, regardless of user
+        //Find out if the course exists at all, regardless of user
         const anyCourse = await Course.findById(req.params.id);
         console.log("❓ Does the course exist for ANY user?", !!anyCourse);
         return res.status(404).json({ error: "Course not found" });
@@ -45,7 +45,7 @@ export const generateCourse = async (req, res) => {
   if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
   try {
-    // 1. Generate the outline using Gemini
+    //Generate the outline using Gemini
     const outline = await generateJSON({
       prompt: buildOutlinePrompt(topic),
       temperature: 0.8,
@@ -55,10 +55,10 @@ export const generateCourse = async (req, res) => {
       throw new Error("Gemini returned an incomplete course outline.");
     }
 
-    // 2. Prepare the course object
+    //Prepare the course object
     const courseId = `${slugify(outline.title)}-${nanoid(6)}`;
     
-    // Add unique IDs to every lesson so we can fetch them later
+    //Add unique IDs to every lesson so we can fetch them later
     const modulesWithIds = outline.modules.map(mod => ({
       ...mod,
       lessons: mod.lessons.map(lesson => ({
@@ -68,8 +68,8 @@ export const generateCourse = async (req, res) => {
     }));
 
     const course = {
-      _id: courseId,      // Satisfies standard MongoDB schema practices
-      id: courseId,       // Explicitly mapped to satisfy insertCourse query mapping!
+      _id: courseId,      //Satisfies standard MongoDB schema practices
+      id: courseId,       //Explicitly mapped to satisfy insertCourse query mapping
       title: outline.title,
       description: outline.description,
       tags: outline.tags,
@@ -78,10 +78,10 @@ export const generateCourse = async (req, res) => {
       user: req.user.id || req.user._id,
     };
 
-    // 3. Save to database
+    //Save to database
     await insertCourse(course);
 
-    // 4. Return the new course to the frontend
+    //Return the new course to the frontend
     res.status(201).json(course);
 
   } catch (err) {

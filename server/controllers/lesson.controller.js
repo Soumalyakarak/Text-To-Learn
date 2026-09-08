@@ -54,10 +54,10 @@ export const getLesson = async (req, res) => {
     const { courseId, moduleIndex, lessonIndex } = req.params;
     const userId = req.user._id;
 
-    // 1. Log what we are looking for
-    console.log(`🔍 DEBUG: Searching Course: ${courseId} for User: ${userId}`);
+    //Log what we are looking for
+    // console.log(`🔍 DEBUG: Searching Course: ${courseId} for User: ${userId}`);
 
-    // 2. Perform a raw find to check for existence first
+    //Perform a raw find to check for existence first
     const exists = await Course.findById(courseId);
     console.log(
       `❓ DEBUG: Does course ${courseId} exist for ANY user?`,
@@ -134,7 +134,7 @@ export const getLessonAudio = async (req, res) => {
 
     const config = LANGUAGE_CONFIG[language.toLowerCase()] || LANGUAGE_CONFIG["hinglish"];
 
-    // 1. Generate text translation/summary via gemini-3.6-flash
+    //Generate text translation/summary via gemini-3.6-flash
     const translationResponse = await ai.models.generateContent({
       model: "gemini-3.6-flash",
       contents: `Summarize and translate the following lesson into ${config.instruction}. Keep it around 2 to 3 sentences for a spoken summary. Output ONLY plain spoken text without headings or markdown formatting:
@@ -144,7 +144,7 @@ export const getLessonAudio = async (req, res) => {
 
     const spokenScript = translationResponse.text?.trim() || "Here is your lesson summary.";
 
-    // 2. Use getAllAudioBase64 to handle scripts longer than 200 characters
+    //Use getAllAudioBase64 to handle scripts longer than 200 characters
     const audioChunks = await googleTTS.getAllAudioBase64(spokenScript, {
       lang: config.code,
       slow: false,
@@ -152,11 +152,11 @@ export const getLessonAudio = async (req, res) => {
       timeout: 10000,
     });
 
-    // 3. Concatenate all audio chunk buffers into one single buffer
+    //Concatenate all audio chunk buffers into one single buffer
     const buffers = audioChunks.map((chunk) => Buffer.from(chunk.base64, "base64"));
     const combinedBuffer = Buffer.concat(buffers);
 
-    // 4. Send combined audio buffer back to frontend
+    //Send combined audio buffer back to frontend
     res.set({
       "Content-Type": "audio/mp3",
       "Content-Length": combinedBuffer.length,
