@@ -26,7 +26,7 @@ export default function CourseOverviewPage() {
   // console.log("Current courseId:", courseId);
   const navigate = useNavigate();
 
-  // State to hold live database records
+  //State to hold live database records
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,7 +60,7 @@ export default function CourseOverviewPage() {
       );
       if (res.ok) {
         const data = await res.json();
-        setCompletedLessons(data.completedLessons); // Expecting array: ["c1-m0-l0", ...]
+        setCompletedLessons(data.completedLessons); //Expecting array: ["c1-m0-l0", ...]
       }
     };
     if (courseId) fetchProgress();
@@ -110,7 +110,7 @@ export default function CourseOverviewPage() {
             </span>
           </div>
           {mod.lessons?.map((lesson, li) => {
-            // Safe calculation of completion status
+            //Safe calculation of completion status
             const isCompleted =
               Array.isArray(completedLessons) &&
               completedLessons.includes(`${courseId}-${mi}-${li}`);
