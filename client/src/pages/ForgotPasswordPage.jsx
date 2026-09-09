@@ -27,12 +27,12 @@ export default function ForgotPasswordPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setStep(2); // Move to OTP entry step
+        setStep(2); //Move to OTP entry step
       } else {
         setError(data.message || "Failed to send OTP.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Network error.Please try again.",err);
     } finally {
       setLoading(false);
     }
@@ -54,13 +54,13 @@ export default function ForgotPasswordPage() {
 
       if (response.ok) {
         setSuccess(true);
-        // Automatically redirect to login after 2 seconds
+        //Automatically redirect to login after 2 seconds
         setTimeout(() => navigate("/login"), 2000);
       } else {
         setError(data.message || "Failed to reset password.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Network error.Please try again.",err);
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-canvas px-4">
-      <div className="w-full max-w-[400px] rounded-2xl border border-hairline bg-surface-1 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+      <div className="w-full max-w-100 rounded-2xl border border-hairline bg-surface-1 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
         
         {/* Back to Login Link */}
         <Link
