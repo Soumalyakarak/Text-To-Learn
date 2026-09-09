@@ -262,18 +262,6 @@ cd client
 npm run build
 ```
 
-## 🚀 Deployment
-
-The application is deployed as two independently managed services:
-
--   **Frontend:** Vercel
--   **Backend:** Render
--   **Database:** MongoDB Atlas
--   **CI/CD:** GitHub Actions
-
-Production deployment is controlled through the CI/CD workflows so
-relevant checks run before the application is pushed live.
-
 ## 📌 Project Goal
 
 The goal of Text-To-Learn is simple:
@@ -287,3 +275,10 @@ downloadable revision material into one learning workflow.
 Rather than simply generating information, the platform is designed to
 take a learner from **understanding → listening → watching → practicing
 → completing → revising**.
+
+## 🔮 Future Scope
+
+- **Better AI Models** — Integrate newer and more capable AI models to improve the quality and accuracy of generated learning content.
+- **Adaptive Quizzes** — Generate quizzes that dynamically adjust their difficulty based on the learner’s performance.
+- **Gamification** — Introduce points, badges, streaks, and achievements to make learning more engaging.
+- **Collaborative Learning** — Enable learners to share courses, discuss lessons, and learn together.
