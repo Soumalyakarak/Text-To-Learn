@@ -196,7 +196,7 @@ export default function HomePage() {
 
       <div
         id="prompt-form-section"
-        className="mx-auto max-w-[1120px] px-12 pb-30"
+        className="mx-auto max-w-280 px-12 pb-30"
       >
         <div className="-mt-5">
           <PromptForm onSubmit={handleGenerate} loading={loading} />
@@ -259,11 +259,11 @@ export default function HomePage() {
 
       <div
         id="how-it-works"
-        className="relative mx-auto max-w-[1040px] px-6 pt-[120px] pb-20 text-center"
+        className="relative mx-auto max-w-260 px-6 pt-30 pb-20 text-center"
       >
         <div className="showcase-glow-backdrop pointer-events-none absolute inset-x-0 -top-[10%] bottom-[10%] z-0" />
 
-        <div className="relative z-[1] mx-auto mb-12 max-w-[600px]">
+        <div className="relative z-1 mx-auto mb-12 max-w-150">
           <div className="mb-2 text-[28px] leading-tight font-normal">
             Type a topic, watch it build.
           </div>
