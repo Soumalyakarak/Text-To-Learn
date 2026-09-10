@@ -7,6 +7,7 @@ import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import PricingPage from "./pages/PricingPage";
+import MyCoursesPage from "./pages/MyCoursesPage";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
 
       {/* Protected App Routes */}
       <Route element={<Layout />}>
+        <Route path="/courses" element={<MyCoursesPage />} />
         <Route path="course/:courseId" element={<CourseOverviewPage />} />
         <Route path="course/:courseId/module/:moduleIndex/lesson/:lessonIndex" element={<LessonPage />} />
       </Route>

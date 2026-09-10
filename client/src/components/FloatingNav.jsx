@@ -52,17 +52,17 @@ export default function FloatingNav() {
           >
             How it works
           </a>
-          <a
-            href="#features"
-            className="text-[12.5px] text-text-secondary transition-colors hover:text-text-primary"
-          >
-            Features
-          </a>
           <Link
             to="/pricing"
             className="text-[12.5px] text-text-secondary transition-colors hover:text-text-primary"
           >
             Pricing
+          </Link>
+          <Link
+            to="/courses"
+            className="text-[12.5px] text-text-secondary transition-colors hover:text-text-primary"
+          >
+            courses
           </Link>
         </div>
 

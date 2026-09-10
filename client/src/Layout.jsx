@@ -33,6 +33,7 @@ function Topbar({ path }) {
 
 function crumbFor(path) {
   if (path === "/") return "Home";
+  if (path === "/courses") return "Your Courses";
   if (path.includes("/lesson/")) return "Lesson";
   if (path.includes("/course/")) return "Course";
   return "";
