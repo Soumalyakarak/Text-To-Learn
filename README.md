@@ -1,284 +1,214 @@
-# Text-To-Learn 🚀
+# 🚀 Text-To-Learn
 
-Text-To-Learn is a full-stack learning platform that transforms a topic which user prompt into a structured, interactive learning experience.
+## 📖 Overview
 
-Instead of leaving users with a large block of information,
-Text-To-Learn organizes the content into modules and lessons, giving
-learners multiple ways to understand, practice, and revise what they
-learn.
+**Text-To-Learn** is a full-stack web application designed to solve information overload. Instead of reading through wall-of-text documents, users can paste dense text and automatically generate structured, multi-module learning paths. Complete with lesson breakdown objectives, video embeds fetched dynamically from YouTube, progress tracking, and secure OAuth authentication.
 
-## 🎯 Features
+## 🎥 Demo & Walkthrough
 
-### 📚 Structured Learning Modules
+[![Text-To-Learn Walkthrough](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
 
--   Converts a topic or custom 
-    text into organized learning modules.
--   Each module is divided into individual lessons so learners can
-    progress through the material step by step.
--   Keeps complex subjects structured and easier to navigate.
+> 📺 **[Click here to watch the full application demo on YouTube](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)**
 
-### 📖 Lesson-Based Learning
+---
 
-Each lesson provides the core learning content in a focused format.
+## ✨ Key Features
 
--   Read the lesson content directly in the application.
--   Learn one concept at a time instead of going through a long wall of
-    text.
--   Move between lessons within a module as you progress.
+* 🧠 **AI-Powered Course Generation:** Utilizes the Google Gemini API to parse text, outline modules, summarize objectives, and format interactive lesson content.
 
-### 🔊 Multilingual Audio Learning
+* 📺 **Automated Video Embeds:** Integrates the YouTube Data API v3 to pair lessons with relevant educational videos, featuring a caching layer to conserve API quota.
 
--   Listen to lesson summaries instead of only reading them.
--   Supports summaries in multiple languages, making the learning
-    experience more accessible to different learners.
--   Provides an alternative way to revise and consume the material while
-    away from the screen.
+* 🔐 **Authentication & Security:** Supports Google OAuth2 sign-in and email/password authentication using HTTP-only JWT cookies and bcrypt password hashing.
 
-### 🎥 Relevant Educational Videos
+* 📚 **Course Library Dashboard:** Centralized library view (`/courses`) where users can save, organize, browse, and track completion progress across all generated courses.
 
--   Finds relevant videos for individual lessons.
--   Adds supplementary video resources to help learners understand a
-    topic from another perspective.
--   Keeps video recommendations connected to the lesson being studied.
+* ✉️ **Transactional Emails:** Integrated Brevo email service for sending user notifications, welcome emails, and OTP password resets.
 
-### 🧠 Interactive MCQ Practice
+* ⚡ **Optimized Performance:** Uses parallel data fetching (`Promise.all`), denormalized navigation hierarchies for fast reads, and responsive Tailwind UI styling.
 
--   Provides multiple-choice questions based on the learning content.
--   Lets learners test their understanding after studying a lesson.
--   Turns passive reading into an active learning process.
-
-### ✅ Lesson Progress Tracking
-
--   Learners can mark lessons as completed.
--   Helps track progress through modules and courses.
--   Makes it easier to identify what has already been studied and what
-    remains.
-
-### 📄 PDF Revision
-
--   Allows learners to download lesson content as a PDF.
--   Gives users an offline-friendly revision resource.
--   Makes it possible to keep lesson material for later review without
-    returning to the application.
-
-### 💾 Course Management
-
--   Users can save generated learning materials.
--   A dashboard provides access to saved topics and courses.
--   Learners can return to previously generated content and continue
-    learning.
-
-### 🔐 Secure Authentication
-
--   Supports sign-in with Google.
--   Provides user-specific access to learning materials and account
-    features.
--   Includes user profile and session management.
-
-### 📧 Email Notifications
-
--   Sends transactional emails and account-related updates.
--   Keeps users informed about important account activity.
+* 🔄 **Automated CI/CD Pipeline:** Gated GitHub Actions workflows that automatically run logic checks and trigger hosting deploy hooks (Vercel & Render).
 
 ## 🏗️ Architecture & Tech Stack
 
-Text-To-Learn is organized as a monorepo with separate frontend and
-backend applications.
+### Monorepo Structure
 
-### Frontend
-
-**React** - Builds the user interface and interactive learning
-experience. - **React Router** handles single-page application
-routing. - **Tailwind CSS** is used for styling. - Deployed on
-**Vercel**.
-
-### Backend
-
-**Node.js + Express.js** - Handles application logic and API
-endpoints. - Manages communication between the frontend, database, and
-external services. - Uses **MongoDB Atlas** for database operations. -
-Deployed on **Render**.
-
-### AI & Media Services
-
-**Google Gemini API** - Analyzes incoming text and generates structured
-study modules and lesson content.
-
-**YouTube Data API v3** - Retrieves relevant educational videos for
-generated lessons.
-
-### Authentication & Email
-
-**Google OAuth2** - Provides Google-based authentication.
-
-**Brevo API** - Handles transactional and account-related email
-delivery.
-
-### CI/CD
-
-**GitHub Actions** - Runs automated checks for the frontend and
-backend. - Uses separate workflows so client and server changes can be
-validated independently. - Deployment is triggered only after the
-corresponding checks pass.
-
-## 🔄 Automated Deployment Pipeline
-
-Production deployments are gated through GitHub Actions rather than
-relying on direct pushes to the hosting platforms.
-
-``` text
-Push to main
-    │
-    ├── Changes in client/
-    │       ↓
-    │   Client checks
-    │       ↓
-    │   Vercel Deploy Hook
-    │
-    └── Changes in server/
-            ↓
-        Server tests
-            ↓
-        Render Deploy Hook
 ```
-
-### How it works
-
-1.  **Path-Based Triggering** --- Changes inside `client/` trigger the
-    client workflow, while changes inside `server/` trigger the server
-    workflow.
-2.  **Automated Gating** --- GitHub Actions runs the relevant checks
-    before deployment.
-3.  **Deployment Hooks** --- When the checks pass, the corresponding
-    hosting platform deploy hook starts the production deployment.
-
-This helps prevent broken builds or backend changes from being deployed
-directly to production.
-
-## 📁 Project Structure
-
-``` text
 Text-To-Learn/
-├── client/
-│   └── React frontend
-├── server/
-│   └── Node.js + Express backend
-└── .github/
-    └── workflows/
-        └── CI/CD workflows
+├── client/   # React + Vite Frontend (Deployed on Vercel)
+└── server/   # Node.js + Express REST API (Deployed on Render)
 ```
 
-## 🛠️ Local Development
+### Core Technologies
+
+| Layer | Technology | Description | 
+| ----- | ----- | ----- | 
+| **Frontend** | React, React Router v6, Tailwind CSS | Responsive SPA with custom theme and seamless routing. | 
+| **Backend** | Node.js, Express.js, Mongoose | Scalable REST API handling auth, course logic, and third-party integrations. | 
+| **Database** | MongoDB Atlas | Cloud document store for users, courses, lesson content, and video caches. | 
+| **AI Engine** | Google Gemini API (`gemini-1.5-flash`) | Context parsing and structured JSON lesson generation. | 
+| **Media API** | YouTube Data API v3 | Relevant educational video discovery per lesson. | 
+| **Email API** | Brevo Transactional Email API | Transactional emails and secure password reset OTPs. | 
+| **CI/CD** | GitHub Actions, Deploy Hooks | Gated testing and deployment pipeline for frontend and backend. | 
+
+## 📊 Database ER Diagram
+
+```mermaid
+erDiagram
+    USER ||--o{ COURSE : "owns / creates"
+    USER ||--o{ LESSON_CONTENT : "owns"
+    COURSE ||--o{ LESSON_CONTENT : "contains detailed content for"
+    COURSE ||--|{ EMBEDDED_MODULE : "embeds (denormalized)"
+    EMBEDDED_MODULE ||--|{ EMBEDDED_LESSON : "embeds"
+
+    USER {
+        ObjectId _id PK
+        string name
+        string email
+        string googleId
+        string password
+        array completedLessons "Array of 'courseId-modIdx-lesIdx'"
+        string resetOtp
+        date resetOtpExpiry
+        date createdAt
+        date updatedAt
+    }
+
+    COURSE {
+        string _id PK "Slug + Hash ID"
+        ObjectId user FK "Ref: User"
+        string title
+        string description
+        array tags
+        number progress
+        date createdAt
+    }
+
+    EMBEDDED_MODULE {
+        string title
+    }
+
+    EMBEDDED_LESSON {
+        string id "Matches LessonContent._id"
+        string title
+        boolean done
+    }
+
+    LESSON_CONTENT {
+        string _id PK "Matches Embedded Lesson ID"
+        string courseId FK "Ref: Course"
+        ObjectId user FK "Ref: User"
+        string title
+        array objectives
+        array content "Mixed (HTML, code, video, etc.)"
+        date createdAt
+    }
+
+    YOUTUBE_CACHE {
+        string _id PK "Search Query Key"
+        string videoId
+        string title
+        date createdAt
+    }
+```
+
+## 🛠️ Local Development Setup
 
 ### Prerequisites
 
--   Node.js v18 or higher
--   MongoDB Atlas cluster
--   Google OAuth credentials
--   Google Gemini API key
--   YouTube Data API key
--   Brevo API key
+* [Node.js](https://nodejs.org/) (v18.0.0 or higher)
+* [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) database cluster
+* [Google Cloud Console](https://console.cloud.google.com/) OAuth credentials and YouTube API Key
+* [Google AI Studio Key](https://aistudio.google.com/) for Gemini API access
+* [Brevo Account](https://www.brevo.com/) for email API keys
 
-### 1. Clone the Repository
+### 1. Repository Setup
 
-``` bash
+```bash
 git clone https://github.com/Soumalyakarak/Text-To-Learn.git
 cd Text-To-Learn
 ```
 
-### 2. Environment Variables
+### 2. Environment Configuration
 
-Create `.env` files inside both `server/` and `client/`.
+Create `.env` files in both `server/` and `client/` directories:
 
-#### `server/.env`
+#### **`server/.env`**
 
-``` env
+```env
 PORT=5000
 CLIENT_URL=http://localhost:5173
 BACKEND_URL=http://localhost:5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+MONGO_URI=mongodb+srv://your_mongodb_atlas_uri
+JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=7d
 
 BREVO_SENDER_EMAIL=your_email@example.com
 BREVO_API_KEY=your_brevo_api_key
 
 GEMINI_API_KEY=your_gemini_api_key
-GEMINI_MODEL=gemini-3.5-flash
+GEMINI_MODEL=gemini-1.5-flash
 
 YOUTUBE_API_KEY=your_youtube_api_key
 
+# Google OAuth Credentials
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
-#### `client/.env`
+#### **`client/.env`**
 
-``` env
+```env
 VITE_API_URL=http://localhost:5000/api
 ```
 
-### 3. Install Dependencies
+### 3. Running Locally
 
-``` bash
+#### Start Server
+
+```bash
 cd server
 npm install
-```
-
-``` bash
-cd ../client
-npm install
-```
-
-### 4. Run the Applications
-
-Backend:
-
-``` bash
-cd server
 npm run dev
 ```
 
-Frontend, in another terminal:
+#### Start Client
 
-``` bash
+```bash
 cd client
+npm install
 npm run dev
+```
+
+Open `http://localhost:5173` in your browser to view the application.
+
+## 🔄 Automated Deployment Pipeline
+
+Automated push-triggered builds on hosting platforms are disabled. Instead, deployments are strictly gated by GitHub Actions:
+
+```
+Push to main
+ ├── Changes in client/  ──>  Run Client Tests  ──> Trigger Vercel Deploy Hook
+ └── Changes in server/  ──>  Run Server Tests  ──> Trigger Render Deploy Hook
 ```
 
 ## 🧪 Testing
 
-Backend tests:
+Run tests and production build verification locally:
 
-``` bash
-cd server
-npm test
+```bash
+# Test backend application
+cd server && npm test
+
+# Verify frontend production build
+cd client && npm run build
 ```
 
-Frontend production build:
+## 👤 Author
 
-``` bash
-cd client
-npm run build
-```
+**Soumalya Karak**
 
-## 📌 Project Goal
+* GitHub: [@Soumalyakarak](https://github.com/Soumalyakarak)
 
-The goal of Text-To-Learn is simple:
+## 📝 License
 
-> **Turn information into something you can actually learn from.**
-
-Text-To-Learn combines structured lessons, multilingual audio summaries,
-relevant educational videos, interactive quizzes, progress tracking, and
-downloadable revision material into one learning workflow.
-
-Rather than simply generating information, the platform is designed to
-take a learner from **understanding → listening → watching → practicing
-→ completing → revising**.
-
-## 🔮 Future Scope
-
-- **Better AI Models** — Integrate newer and more capable AI models to improve the quality and accuracy of generated learning content.
-- **Adaptive Quizzes** — Generate quizzes that dynamically adjust their difficulty based on the learner’s performance.
-- **Gamification** — Introduce points, badges, streaks, and achievements to make learning more engaging.
-- **Collaborative Learning** — Enable learners to share courses, discuss lessons, and learn together.
+This project is [MIT](LICENSE) licensed.
