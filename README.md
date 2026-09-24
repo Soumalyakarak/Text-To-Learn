@@ -209,7 +209,3 @@ cd client && npm run build
 **Soumalya Karak**
 
 * GitHub: [@Soumalyakarak](https://github.com/Soumalyakarak)
-
-## 📝 License
-
-This project is [MIT](LICENSE) licensed.
