@@ -14,15 +14,17 @@
 
 * 🧠 **AI-Powered Course Generation:** Utilizes the Google Gemini API to parse text, outline modules, summarize objectives, and format interactive lesson content.
 
+* 📄 **PDF Export:** Allows users to download complete courses or individual lessons as formatted PDF documents for offline studying.
+
+* 🎧 **Multilingual Audio Summaries:** Generates multi-language audio recaps of lesson content for hands-free and accessible learning.
+
 * 📺 **Automated Video Embeds:** Integrates the YouTube Data API v3 to pair lessons with relevant educational videos, featuring a caching layer to conserve API quota.
 
 * 🔐 **Authentication & Security:** Supports Google OAuth2 sign-in and email/password authentication using HTTP-only JWT cookies and bcrypt password hashing.
 
 * 📚 **Course Library Dashboard:** Centralized library view (`/courses`) where users can save, organize, browse, and track completion progress across all generated courses.
 
-* ✉️ **Transactional Emails:** Integrated Brevo email service for sending user notifications, welcome emails, and OTP password resets.
-
-* ⚡ **Optimized Performance:** Uses parallel data fetching (`Promise.all`), denormalized navigation hierarchies for fast reads, and responsive Tailwind UI styling.
+* ✉️ **Transactional Emails:** Integrated Brevo email service for sending user notifications and OTP password resets.
 
 * 🔄 **Automated CI/CD Pipeline:** Gated GitHub Actions workflows that automatically run logic checks and trigger hosting deploy hooks (Vercel & Render).
 
@@ -43,8 +45,9 @@ Text-To-Learn/
 | **Frontend** | React, React Router v6, Tailwind CSS | Responsive SPA with custom theme and seamless routing. | 
 | **Backend** | Node.js, Express.js, Mongoose | Scalable REST API handling auth, course logic, and third-party integrations. | 
 | **Database** | MongoDB Atlas | Cloud document store for users, courses, lesson content, and video caches. | 
-| **AI Engine** | Google Gemini API (`gemini-1.5-flash`) | Context parsing and structured JSON lesson generation. | 
-| **Media API** | YouTube Data API v3 | Relevant educational video discovery per lesson. | 
+| **AI Engine** | Google Gemini API | Context parsing and structured JSON lesson generation. | 
+| **Media & Audio API** | YouTube Data API v3,Google TTS API,Google GenAI | Relevant video discovery per lesson and audio summary playback. | 
+| **Document Export** |	@react-pdf/renderer | Dynamic PDF layout and document rendering for downloading course content. |
 | **Email API** | Brevo Transactional Email API | Transactional emails and secure password reset OTPs. | 
 | **CI/CD** | GitHub Actions, Deploy Hooks | Gated testing and deployment pipeline for frontend and backend. | 
 
