@@ -6,9 +6,7 @@
 
 ## 🎥 Demo & Walkthrough
 
-[![Text-To-Learn Walkthrough](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
-
-> 📺 **[Click here to watch the full application demo on YouTube](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)**
+[![Text-To-Learn Walkthrough](https://img.youtube.com/vi/nMovZ7itz2I/maxresdefault.jpg)](https://www.youtube.com/watch?v=nMovZ7itz2I)
 
 ---
 
